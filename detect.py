@@ -39,18 +39,18 @@ while 1:
         c = max(approx, key=cv2.contourArea)
         if len(c) == 4:
             rect = cv2.minAreaRect(c)
-            temp = rect.points()[0]
+            box = cv2.boxPoints(rect)
+            temp = box[0]
             max = 0.0
-            for p in rect.points():
+            for p in box:
                 if cv2.norm(p - temp) >= max:
                     max = cv2.norm(p-temp)
                     p1 = p
                     p2 = temp
                 temp = p
 
-            contSlope = (p1.y - p2.y)/(p1.x - p2.x)
+            contSlope = (p1[1] - p2[1])/(p1[0] - p2[0])
             print(contSlope)
-            box = cv2.boxPoints(rect)
             box = np.int0(box)
             cv2.drawContours(frame, [box], 0, (0, 255, 25), 2)
         else:
