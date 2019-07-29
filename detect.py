@@ -40,7 +40,7 @@ while 1:
 
     if not (len(bContours) == 0):
         c = max(approx, key=cv2.contourArea)
-        if len(c) == 4 and c > 3000:
+        if len(c) == 4 and cv2.contourArea(c) > 2500:
             rect = cv2.minAreaRect(c)
             box = cv2.boxPoints(rect)
             temp = box[0]
@@ -51,8 +51,10 @@ while 1:
                     p1 = p
                     p2 = temp
                 temp = p
-
-            contSlope = (p1[1] - p2[1])/(p1[0] - p2[0])
+            if p1[0] == p2[0] or abs(p1[0] - p2[0] <= 0.0001):
+                contSlope = float("inf")
+            else:
+                contSlope = (p1[1] - p2[1])/(p1[0] - p2[0])
             print(contSlope)
             box = np.int0(box)
             cv2.drawContours(bOut, [box], 0, (0, 255, 25), 2)
