@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+
 cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
@@ -10,9 +11,11 @@ while 1:
 
     _, frame = cap.read()
 
+    cv2.medianBlur(frame, 5 , frame)
+
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     # range for bgr
-    lower_blue = np.array([90, 150, 50])
+    lower_blue = np.array([90, 130, 0])
     upper_blue = np.array([105, 255, 255])
     lower_green = np.array([50, 90, 50])
     upper_green = np.array([80, 255, 255])
@@ -37,14 +40,14 @@ while 1:
 
     if not (len(bContours) == 0):
         c = max(approx, key=cv2.contourArea)
-        if len(c) == 4:
+        if len(c) == 4 and c > 3000:
             rect = cv2.minAreaRect(c)
             box = cv2.boxPoints(rect)
             temp = box[0]
-            max = 0.0
+            maxLen = 0.0
             for p in box:
-                if cv2.norm(p - temp) >= max:
-                    max = cv2.norm(p-temp)
+                if cv2.norm(p - temp) >= maxLen:
+                    maxLen = cv2.norm(p-temp)
                     p1 = p
                     p2 = temp
                 temp = p
@@ -52,9 +55,8 @@ while 1:
             contSlope = (p1[1] - p2[1])/(p1[0] - p2[0])
             print(contSlope)
             box = np.int0(box)
-            cv2.drawContours(frame, [box], 0, (0, 255, 25), 2)
-        else:
-            print("No large rectangle found.")
+            cv2.drawContours(bOut, [box], 0, (0, 255, 25), 2)
+
     else:
         print("No shape found.")
 
